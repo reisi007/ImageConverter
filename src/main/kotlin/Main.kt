@@ -18,7 +18,7 @@ object Main {
     @JvmStatic
     fun main(args: Array<String>) {
         // Img Size (longest side) to Quality (in percent)
-        val config = listOf(100 to 0.2f, 350 to 0.25f, 500 to 0.25f, 800 to 0.25f, 1300 to 0.25f, 2000 to 0.3f, 3000 to 0.35f)
+        val config = listOf(300 to 0.2f, 400 to 0.2f, 700 to 0.35f, 1200 to 0.35f, 2050 to 0.4f, 3000 to 0.5f)
         val parallelism = 4
 
         val workingDir = args.getOrElse(0) { "." }
