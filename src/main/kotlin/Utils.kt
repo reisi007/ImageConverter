@@ -35,7 +35,8 @@ fun Path.readJpgMetadata(): JpegDirectory? = ImageMetadataReader
         .readMetadata(toFile())
         .getFirstDirectoryOfType(JpegDirectory::class.java)
 
-fun ExecutorService.use(doSomething: (ExecutorService) -> Unit) {
+fun ExecutorService.use(doSomething: (ExecutorService) -> Unit) = try {
     doSomething(this)
+} finally {
     shutdown()
 }

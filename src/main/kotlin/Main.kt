@@ -23,17 +23,16 @@ object Main {
 
         val workingDir = args.getOrElse(0) { "." }
         val basePath = Paths.get(workingDir).toAbsolutePath()
-        val outPath = basePath.resolve("out")
-        val htmlOut = basePath.resolve("html")
+        val outPath = args.getOrNull(1)?.let { Paths.get(it) } ?: kotlin.run { basePath.resolve("out") }
+        val htmlOut = args.getOrNull(2)?.let { Paths.get(it) } ?: kotlin.run { basePath.resolve("html") }
         Files.createDirectories(outPath)
         Files.createDirectories(htmlOut)
 
         val foundFiles = resolveOutFileDates(outPath)
         resolveOutFileDates(basePath)
 
+        println("Starting execution")
         Executors.newFixedThreadPool(parallelism).use { executor ->
-            println("Starting execution")
-
             listFiles(workingDir)
                     .map { it.toPath() }
                     .filter { Files.isRegularFile(it) }
@@ -52,9 +51,8 @@ object Main {
                     .map { (originalFile, future) -> originalFile to future.join() }
                     .toMapWithListValues()
                     .createHtmlHelp(htmlOut)
-
-            println("Finished execution")
         }
+        println("Finished execution")
     }
 
     private fun listFiles(workingDir: String) = File(workingDir)
