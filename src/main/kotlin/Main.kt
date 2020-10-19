@@ -2,6 +2,7 @@ package at.reisishot.mintha;
 
 import kotlinx.html.div
 import kotlinx.html.stream.appendHTML
+import kotlinx.html.style
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -82,6 +83,10 @@ object Main {
                     it.appendHTML().div("lazy") {
                         attributes["data-alt"] = ">>> Alternativtext <<<"
                         attributes["data-sizes"] = outFiles.size.toString()
+                        outFiles.first().first.readJpgMetadata()?.let {
+                            style = "padding-top: ${(it.imageHeight * 100f) / it.imageWidth}%"
+                        }
+
                         outFiles.forEachIndexed { idx, (jpgOut, webPOut) ->
                             jpgOut.readJpgMetadata()?.let {
                                 attributes["data-$idx"] = """{"jpg":"${prefix + jpgOut.fileName}","webp":"${prefix + webPOut.fileName}","w":${it.imageWidth},"h":${it.imageHeight}}"""
