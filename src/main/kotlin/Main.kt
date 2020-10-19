@@ -62,15 +62,15 @@ object Main {
             ?: throw IllegalStateException("Folder is not valid!")
 
 
-    private fun createJobs(imgPath: Path, outPath: Path, config: Collection<Pair<Int, Float>>)
-    // Convert image
-            = config.asSequence()
-            .map { (size, quality) ->
-                imgPath to Supplier {
-                    createJobs(imgPath, outPath, size, quality, "jpg") to
-                            createJobs(imgPath, outPath, size, quality, "webp")
-                }
-            }
+    private fun createJobs(imgPath: Path, outPath: Path, config: Collection<Pair<Int, Float>>) =
+            // Convert image
+            config.asSequence()
+                    .map { (size, quality) ->
+                        imgPath to Supplier {
+                            createJobs(imgPath, outPath, size, quality, "jpg") to
+                                    createJobs(imgPath, outPath, size, quality, "webp")
+                        }
+                    }
 
 
     private fun Map<Path, List<Pair<Path, Path>>>.createHtmlHelp(outPath: Path) =
@@ -80,18 +80,20 @@ object Main {
                         StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE
                 ).use {
                     val prefix = "/img/"
-                    it.appendHTML().div("lazy") {
-                        attributes["data-alt"] = ">>> Alternativtext <<<"
-                        attributes["data-sizes"] = outFiles.size.toString()
-                        outFiles.first().first.readJpgMetadata()?.let {
-                            style = "padding-top: ${(it.imageHeight * 100f) / it.imageWidth}%"
-                        }
-
-                        outFiles.forEachIndexed { idx, (jpgOut, webPOut) ->
-                            jpgOut.readJpgMetadata()?.let {
-                                attributes["data-$idx"] = """{"jpg":"${prefix + jpgOut.fileName}","webp":"${prefix + webPOut.fileName}","w":${it.imageWidth},"h":${it.imageHeight}}"""
+                    it.appendHTML().div("pic-holder") {
+                        div("lazy") {
+                            attributes["data-alt"] = ">>> Alternativtext <<<"
+                            attributes["data-sizes"] = outFiles.size.toString()
+                            outFiles.first().first.readJpgMetadata()?.let {
+                                style = "padding-top: ${(it.imageHeight * 100f) / it.imageWidth}%"
                             }
 
+                            outFiles.forEachIndexed { idx, (jpgOut, webPOut) ->
+                                jpgOut.readJpgMetadata()?.let {
+                                    attributes["data-$idx"] = """{"jpg":"${prefix + jpgOut.fileName}","webp":"${prefix + webPOut.fileName}","w":${it.imageWidth},"h":${it.imageHeight}}"""
+                                }
+
+                            }
                         }
                     }
                 }
@@ -111,7 +113,6 @@ object Main {
         return outFile
     }
 
-
     private fun resolveOutFileDates(outPath: Path): Map<String, FileTime> =
             if (Files.exists(outPath)) {
                 Files.list(outPath)
@@ -119,12 +120,9 @@ object Main {
                         .collect(Collectors.toMap({ it.first }, { it.second }, { a, b -> if (a < b) a else b }))
             } else emptyMap()
 
-
     fun makeAbsolute(base: Path, target: Path): Path =
             if (target.isAbsolute)
                 target.normalize()
             else
                 base.resolve(target).normalize()
-
-
 }
