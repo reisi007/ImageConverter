@@ -1,5 +1,6 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.0' apply false
+    // https://kotlinlang.org/docs/releases.html#release-details
+    id 'org.jetbrains.kotlin.jvm' version '1.4.32' apply false
 }
 
 group 'at.reisishot.utils'
@@ -42,12 +43,10 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 
 
 dependencies {
-    def kotlinx_html_version = "0.6.10"
+    def kotlinx_html_version = "0.7.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-html-jvm
     implementation "org.jetbrains.kotlinx:kotlinx-html-jvm:${kotlinx_html_version}"
-    // https://mvnrepository.com/artifact/com.google.guava/guava
-    implementation group: 'com.google.guava', name: 'guava', version: '28.2-jre'
     // https://mvnrepository.com/artifact/com.drewnoakes/metadata-extractor
-    compile group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.11.0'
+    compile group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.15.0'
 }
